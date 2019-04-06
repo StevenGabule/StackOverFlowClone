@@ -17,13 +17,27 @@
 
                         <div class="media">
                             <div class="d-flex flex-column vote-controls">
+
                                 <a title="This question is useful" class="vote-up"><i class="fas fa-caret-up fa-2x"></i></a>
                                 <span class="votes-count">1230</span>
-                                <a title="This is not useful" class="vote-down off"><i class="fas fa-caret-down fa-2x"></i></a>
-                                <a title="click to mark as favorite question (Click again to undo)" class="favorited">
+
+                                <a title="This is not useful" class="vote-down off"><i
+                                            class="fas fa-caret-down fa-2x"></i></a>
+
+                                <a title="click to mark as favorite question (Click again to undo)"
+                                   class="favorite mt-2 {{ Auth::guest() ? 'off': ($question->is_favorited ? 'favorited' : '') }}"
+                                   onclick="event.preventDefault();document.getElementById('favorite-question-{{ $question->id  }}').submit()">
                                     <i class="fas fa-star fa-2x"></i>
-                                    <span class="favorite-count">123</span>
+                                    <span class="favorite-count"
+                                          style="color: black">{{ $question->favorites_count }}</span>
                                 </a>
+                                <form action="/questions/{{ $question->id }}/favorites"
+                                      id="favorite-question-{{ $question->id }}" method="post" style="display: none;">
+                                    @csrf
+                                    @if($question->is_favorited)
+                                        @method('DELETE')
+                                    @endif
+                                </form>
                             </div>
                             <div class="media-body">
                                 {!! $question->body_html !!}
@@ -48,8 +62,6 @@
             'answers' => $question->answers,
             'answersCount' => $question->answers_count
         ])
-        @include('answers.create', [
-
-        ])
+        @include('answers.create', [])
     </div><!-- end of container -->
 @endsection
